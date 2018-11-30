@@ -22,9 +22,9 @@ tar -xvf Zackular_EDRN_fastq_files.gz.tar -C data/raw_data/
 # Due to it is a paired-end sequenceing
 # this project will only deal with R1 sequqences
 # thus, delet the files has R2 in the name rather tan R1
-for file in "*_R2_*"
+for file in *_R2_*
 do 
-   rm data/raw_data/$file 
+   rm "data/raw_data/$file" 
 done
 
 

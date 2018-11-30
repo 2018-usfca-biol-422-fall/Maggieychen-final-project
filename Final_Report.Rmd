@@ -44,12 +44,62 @@ These are the methods you used to do your bioinformatic analyses analyses. Shoul
 ```
 
 ```{r load-packages-and-data}
-# load packages as needed
+
+# load general-use packages
 library("dplyr")
+library("tidyr")
+library("knitr")
+library("ggplot2")
+
+# this package allows for the easy inclusion of literature citations in our Rmd
+# more info here: https://github.com/crsh/citr
+# and here:
+# http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html
+library("citr")
+
+# These are the primary packages well use to clean and analyze the data
+# this package needs to be installed from bioconductor -- it's not on CRAN
+# see info here: https://benjjneb.github.io/dada2/dada-installation.html
+library("dada2")
+
+# This to export a fasta of our final denoised sequence variants
+library("seqinr")
+
+# To install this you have to install from GitHub
+# See more info here: https://github.com/leffj/mctoolsr
+# run this -- install.packages("devtools")
+# and then this -- devtools::install_github("leffj/mctoolsr")
+library("mctoolsr")
+
+# And this to visualize our results
+# it also needs to be installed from bioconductor
+library("phyloseq")
 
 # load data produced from analysis scripts using
 # something like load("output/processed_data.Rdata")
 ```
+
+
+```{r extract-sample-and-file-names}
+# NOTE: Much of the following follows the DADA2 tutorials available here:
+# https://benjjneb.github.io/dada2/tutorial.html
+# Accessed October 19, 2017
+# set the base path for our input data files
+path <- "data/raw_data"
+
+# Sort ensures samples are in order
+filenames_forward_reads <- sort(list.files(path, pattern = ".fastq"))
+
+# Extract sample names, assuming filenames have format: SAMPLENAME.fastq
+sample_names <- sapply(strsplit(filenames_forward_reads, "\\."), `[`, 1)
+
+# Specify the full path to each of the filenames_forward_reads
+filenames_forward_reads <- file.path(path, filenames_forward_reads)
+```
+
+
+
+
 
 In addition to a minimum of 5-8 figures/tables (and associated captions), you should include sufficient text in this section to describe what your findings were. Remember that in the results section you just describe what you found, but you don't interpret it - that happens in the discussion. 2-3 pages.
 
