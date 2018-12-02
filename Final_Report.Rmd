@@ -137,7 +137,7 @@ kable(filtered_output,
 ```{r learn-errors, include = FALSE}
 # this build error models from each of the samples
 errors_forward_reads <- learnErrors(filtered_reads_path,
-                                    multithread = FALSE)
+                                    multithread = TRUE)
 ```
 
 ```{r visualize-errors-with-plots,include = FALSE}
@@ -161,9 +161,7 @@ names(dereplicated_forward_reads) <- sample_names
 # https://benjjneb.github.io/dada2/
 #     faq.html#can-i-use-dada2-with-my-454-or-ion-torrent-data
 dada_forward_reads <- dada(dereplicated_forward_reads,
-                           err = errors_forward_reads,
-                           HOMOPOLYMER_GAP_PENALTY = -1, # reduce penalty bc 454
-                           BAND_SIZE = 32) # performs local alignments bc indels
+                           err = errors_forward_reads) 
 # check dada results
 dada_forward_reads
 ```
@@ -257,8 +255,7 @@ export_taxa_table_and_seqs(sequence_table_nochim,
 # here the `sep = "\t"` tells the function that the data are tab-delimited
 # and the `stringsAsFactors = FALSE` tells it not to assume that things are
 # categorical variables
-metadata_in <- read.table(paste0("data/metadata/",
-                    "fierer_hand_bacteria_SRA_study_ERP022626_SraRunTable.txt"),
+metadata_in <- read.table(paste0("data/metadata/","EDRN_MIMARKS.csv"),
                           sep = "\t",
                           header = TRUE,
                           stringsAsFactors = FALSE,
