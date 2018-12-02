@@ -116,7 +116,7 @@ filtered_reads_path <- file.path(filter_path,
 #     faq.html#can-i-use-dada2-with-my-454-or-ion-torrent-data
 filtered_output <- filterAndTrim(fwd = filenames_forward_reads,
                                  filt = filtered_reads_path,
-                                 truncLen = 250,
+                                 maxLen = 300,
                                  maxN = 0, # discard any seqs with Ns
                                  maxEE = 3, # allow w/ up to 3 expected errors
                                  truncQ = 2, # cut off if quality gets this low
