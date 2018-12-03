@@ -9,6 +9,7 @@ library("dplyr")
 library("tidyr")
 library("knitr")
 library("ggplot2")
+library("tibble")
 
 # this package allows for the easy inclusion of literature citations in our Rmd
 # more info here: https://github.com/crsh/citr
@@ -129,8 +130,6 @@ dada_forward_reads
 sequence_table <- makeSequenceTable(dada_forward_reads)
 
 
-The output table has `r nrow(sequence_table)` rows (samples) and `r ncol(sequence_table)` columns (sequence variants). Notice how we can embed R code directly in our markdown text.
-
 # histogram-of-sequence-lengths
 # Quick check to look at distribution of trimmed and denoised sequences
 hist(nchar(getSequences(sequence_table)),
@@ -148,8 +147,6 @@ sequence_table_nochim <- removeBimeraDenovo(sequence_table,
 non_chimeric_reads <- round(sum(sequence_table_nochim) / sum(sequence_table),
                             digits = 4) * 100
 
-
-After removing chimeras, we were left with `r non_chimeric_reads`% of our cleaned reads.
 
 # table-of-pipeline-read-counts
 # Build a table showing how many sequences remain at each step of the pipeline
@@ -213,8 +210,10 @@ export_taxa_table_and_seqs(sequence_table_nochim,
 # here the `sep = "\t"` tells the function that the data are tab-delimited
 # and the `stringsAsFactors = FALSE` tells it not to assume that things are
 # categorical variables
-metadata_in <- read.csv(("data/metadata/EDRN_MIMARKS.csv"),
-                        row.names = 1)# sets sample IDs to row names
+metadata_in <- read.csv("data/metadata/EDRN_MIMARKS.csv",
+                        row.names = 1,
+                        na.strings = "not provided",
+                        stringsAsFactors = FALSE) # sets sample IDs to row names
 row.names(metadata_in)
 row.names(sequence_table_nochim)
 
@@ -228,6 +227,22 @@ new_row_names
 # then assign the new names to the row names
 row.names(sequence_table_nochim) <- new_row_names
 
+metadata_in$tot_height.cm. <- gsub(pattern = "\\s",
+                                   replacement = "",
+                                   metadata_in$tot_height.cm.,
+                                   perl = TRUE)
+metadata_in$tot_mass.kg. <- gsub(pattern = "\\s",
+                                   replacement = "",
+                                   metadata_in$tot_mass.kg.,
+                                   perl = TRUE)
+
+metadata_in$tot_height.cm. <- as.numeric(metadata_in$tot_height.cm.)
+metadata_in$tot_mass.kg. <- as.numeric(metadata_in$tot_mass.kg.)
+
+metadata_in_bmi <- metadata_in %>%
+  rownames_to_column() %>%
+  mutate(bmi = tot_mass.kg. / ((tot_height.cm. / 100) ^2 ))
+
 # Construct phyloseq object (straightforward from dada2 outputs)
 phyloseq_obj <- phyloseq(otu_table(sequence_table_nochim,
                                    taxa_are_rows = FALSE), # sample-spp matrix
@@ -236,3 +251,6 @@ phyloseq_obj <- phyloseq(otu_table(sequence_table_nochim,
 
 
 melted_obj <- psmelt(phyloseq_obj)
+
+save(phyloseq_obj, file = "output/phyloseq_obj.Rdata")
+save(melted_obj, file = "output/melted_obj.Rdata")
