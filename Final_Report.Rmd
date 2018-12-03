@@ -161,7 +161,7 @@ names(dereplicated_forward_reads) <- sample_names
 # https://benjjneb.github.io/dada2/
 #     faq.html#can-i-use-dada2-with-my-454-or-ion-torrent-data
 dada_forward_reads <- dada(dereplicated_forward_reads,
-                           err = errors_forward_reads) 
+                           err = errors_forward_reads)
 # check dada results
 dada_forward_reads
 ```
@@ -255,18 +255,19 @@ export_taxa_table_and_seqs(sequence_table_nochim,
 # here the `sep = "\t"` tells the function that the data are tab-delimited
 # and the `stringsAsFactors = FALSE` tells it not to assume that things are
 # categorical variables
-metadata_in <- read.table(paste0("data/metadata/","EDRN_MIMARKS.csv"),
-                          sep = "\t",
+metadata_in <- read.csv(("data/metadata/EDRN_MIMARKS.csv"),
+                         sep = "\t",
                           header = TRUE,
-                          stringsAsFactors = FALSE,
-                          row.names = 6) # sets sample IDs to row names
+                           stringsAsFactors = FALSE,
+                          row.names = 1)
+                     # sets sample IDs to row names
 # read in the phylogeny, which was created from the fasta exported above
 # in Geneious by aligning the sequences with MAFFT and then building a
 # Maximum-Likelihood tree with RAxML
 tree_in <- read_tree("output/sequence_variants_MAFFT_FastTree.newick")
 # Construct phyloseq object (straightforward from dada2 outputs)
 phyloseq_obj <- phyloseq(otu_table(sequence_table_nochim,
-                                   taxa_are_rows = FALSE), # sample-spp matrix
+                                   taxa_are_rows = TRUE), # sample-spp matrix
                          sample_data(metadata_in), # metadata for each sample
                          tax_table(taxa), # taxonomy for each sequence variant
                          phy_tree(tree_in)) # phylogeny from sequence variants
