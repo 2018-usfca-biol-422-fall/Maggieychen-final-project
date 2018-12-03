@@ -257,6 +257,18 @@ export_taxa_table_and_seqs(sequence_table_nochim,
 # categorical variables
 metadata_in <- read.csv(("data/metadata/EDRN_MIMARKS.csv"),
                           row.names = 1)# sets sample IDs to row names
+row.names(metadata_in)
+row.names(sequence_table_nochim)
+
+old_row_names <- row.names(sequence_table_nochim)
+new_row_names <- sapply(strsplit(old_row_names, "_"), `[`, 1)
+
+# check that new_row_names is what we want before running the last line of code
+# we want it to be the same as the metadata table row names
+new_row_names
+
+# then assign the new names to the row names
+row.names(sequence_table_nochim) <- new_row_names
 
 # Construct phyloseq object (straightforward from dada2 outputs)
 phyloseq_obj <- phyloseq(otu_table(sequence_table_nochim,
