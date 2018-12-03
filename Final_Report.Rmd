@@ -256,21 +256,14 @@ export_taxa_table_and_seqs(sequence_table_nochim,
 # and the `stringsAsFactors = FALSE` tells it not to assume that things are
 # categorical variables
 metadata_in <- read.csv(("data/metadata/EDRN_MIMARKS.csv"),
-                         sep = "\t",
-                          header = TRUE,
-                           stringsAsFactors = FALSE,
-                          row.names = 1)
-                     # sets sample IDs to row names
-# read in the phylogeny, which was created from the fasta exported above
-# in Geneious by aligning the sequences with MAFFT and then building a
-# Maximum-Likelihood tree with RAxML
-tree_in <- read_tree("output/sequence_variants_MAFFT_FastTree.newick")
+                          row.names = 1)# sets sample IDs to row names
+
 # Construct phyloseq object (straightforward from dada2 outputs)
 phyloseq_obj <- phyloseq(otu_table(sequence_table_nochim,
-                                   taxa_are_rows = TRUE), # sample-spp matrix
-                         sample_data(metadata_in), # metadata for each sample
-                         tax_table(taxa), # taxonomy for each sequence variant
-                         phy_tree(tree_in)) # phylogeny from sequence variants
+                                   taxa_are_rows = FALSE), # sample-spp matrix
+                         sample_data(metadata_in),# metadata for each sample
+                         tax_table(taxa)) # taxonomy for each sequence variant
+                    
 ```
 In addition to a minimum of 5-8 figures/tables (and associated captions), you should include sufficient text in this section to describe what your findings were. Remember that in the results section you just describe what you found, but you don't interpret it - that happens in the discussion. 2-3 pages.
 
