@@ -47,22 +47,116 @@ These are the methods you used to do your bioinformatic analyses analyses. Shoul
 melted_obj <- psmelt(phyloseq_obj)
 ```
 
+
 ```{r}
-melted_obj %>%
-  ggplot(aes(x = Phylum,
+top_15 <- melted_obj %>%
+  group_by(sfffile_id_R1, Genus) %>%
+  arrange(desc(Abundance)) %>%
+  head(50)
+
+
+top_15 %>%
+  kable()
+
+
+
+  ggplot(aes(x = bmi,
              y = Abundance,
-             fill = sex,
-             color = sex)) +
-  geom_col() +
-  facet_grid(~ disease_stat) +
-   theme(axis.text.x = element_text(angle = 90,
-                                     hjust = 1))
+             color = disease_stat)) +
+  geom_point()
+
 ```
 
 
 
 
+
+
+
+
+
+```{r}
+melted_obj %>%
+  ggplot(aes(x = disease_stat,
+             y = Abundance,
+             fill = Phylum,
+             color = Phylum)) +
+  geom_col() +
+  facet_grid(~ FOBT.result)
+```
+Figure 1. In different types of tissue samples, they have very similar composition of microbia communities, but there are differences in the Abunance of different phlyum. 
+
+
+```{r}
+melted_obj %>%
+  filter(Phylum %in% c("Proteobacteria", "Firmicutes", "Verrucomicrobia", "Bacteroideetes")) %>%
+  filter(Class != "NA") %>%
+  ggplot(aes(x = Class,
+             y = Abundance,
+             color = FOBT.result,
+             fill = FOBT.result)) +
+  geom_col(position = "dodge") +
+  facet_grid(~ disease_stat) +
+  theme(axis.text.x = element_text(angle = 90,
+                                     hjust = 1))
+```
+Figure 2. Picked out top four most common Phylum and examine their corrolation between Class and FOBT results. Blood clots were only found in cancer tissues, and cancer tissue has a different micorbia community distribution than the normal tissue. 
+
+```{r}
+melted_obj %>%
+  filter(Class %in% c("Gammaproteobacteria", "Bacilli", "Clostridia", "Negativicutes")) %>%
+  filter(FOBT.result == "positive") %>%
+  ggplot(aes(x = disease_stat,
+             y = Abundance,
+             fill = Class)) +
+  geom_col() +
+  facet_grid(~ sex)
+```
+
+Figure 3. Filtered out the Class that in significantly more abundant in cancer community Gammaproteobacteria and examine in the tissue that has blood clot, how the mricobia community different in gender
+
+```{r}
+melted_obj %>%
+  filter(Class %in% c("Clostridia")) %>%
+  filter(FOBT.result == "positive") %>%
+  ggplot(aes(x = age,
+             y = Abundance,
+             color = Family)) +
+  geom_jitter() +
+  facet_grid(~ disease_stat)
+```
+
+
+
+
+```{r}
+melted_obj %>%
+  filter(Order %in% c("Ruminococcaceae", "Lachnospiraceae")) %>%
+  ggplot(aes(x = age,
+             y = Abundance,
+             fill = Genus)) +
+  geom_col(position = "dodge")
+```
+
+```{r}
+melted_obj %>%
+  filter(Genus == "Escherichia/Shigella") %>%
+  ggplot(aes(x = Abundance,
+             y = bmi,
+             color = FOBT.result )) +
+  geom_point()
+```
  
+```{r}
+melted_obj %>%
+  filter(Genus == "Escherichia/Shigella") %>%
+  filter(disease_stat != "normal") %>%
+  ggplot(aes(x = bmi,
+             y = age,
+             color = FOBT.result )) +
+  geom_point() +
+  geom_smooth()
+```
 
 
 In addition to a minimum of 5-8 figures/tables (and associated captions), you should include sufficient text in this section to describe what your findings were. Remember that in the results section you just describe what you found, but you don't interpret it - that happens in the discussion. 2-3 pages.

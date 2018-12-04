@@ -210,22 +210,11 @@ export_taxa_table_and_seqs(sequence_table_nochim,
 # here the `sep = "\t"` tells the function that the data are tab-delimited
 # and the `stringsAsFactors = FALSE` tells it not to assume that things are
 # categorical variables
-metadata_in <- read.csv("data/metadata/EDRN_MIMARKS.csv",
+metadata_in <- read.csv("data/metadata/EDRN_MIMARKS_.csv",
                         row.names = 1,
                         na.strings = "not provided",
                         stringsAsFactors = FALSE) # sets sample IDs to row names
-row.names(metadata_in)
-row.names(sequence_table_nochim)
 
-old_row_names <- row.names(sequence_table_nochim)
-new_row_names <- sapply(strsplit(old_row_names, "_"), `[`, 1)
-
-# check that new_row_names is what we want before running the last line of code
-# we want it to be the same as the metadata table row names
-new_row_names
-
-# then assign the new names to the row names
-row.names(sequence_table_nochim) <- new_row_names
 
 metadata_in$tot_height.cm. <- gsub(pattern = "\\s",
                                    replacement = "",
@@ -241,12 +230,36 @@ metadata_in$tot_mass.kg. <- as.numeric(metadata_in$tot_mass.kg.)
 
 metadata_in_bmi <- metadata_in %>%
   rownames_to_column() %>%
-  mutate(bmi = tot_mass.kg. / ((tot_height.cm. / 100) ^2 ))
+  mutate(bmi = tot_mass.kg. / ((tot_height.cm. / 100) ^2 )) 
+
+print(metadata_in_bmi, digits = 2)
+
+metadata_in_bmi$tot_height.cm. <- as.factor(metadata_in_bmi$tot_height.cm.)
+metadata_in_bmi$tot_mass.kg. <- as.factor(metadata_in_bmi$tot_mass.kg.)
+metadata_in_bmi$bmi <- as.factor(metadata_in_bmi$bmi)
+
+metadata_in_final <- metadata_in_bmi %>%
+  column_to_rownames() 
+
+
+# Check the row names in each of the files
+row.names(metadata_in_bmi)
+row.names(sequence_table_nochim)
+
+old_row_names <- row.names(sequence_table_nochim)
+new_row_names <- sapply(strsplit(old_row_names, "_"), `[`, 1)
+
+# check that new_row_names is what we want before running the last line of code
+# we want it to be the same as the metadata table row names
+new_row_names
+
+# then assign the new names to the row names
+row.names(sequence_table_nochim) <- new_row_names
 
 # Construct phyloseq object (straightforward from dada2 outputs)
 phyloseq_obj <- phyloseq(otu_table(sequence_table_nochim,
                                    taxa_are_rows = FALSE), # sample-spp matrix
-                         sample_data(metadata_in),# metadata for each sample
+                         sample_data(metadata_in_final),# metadata for each sample
                          tax_table(taxa)) # taxonomy for each sequence variant
 
 
@@ -254,3 +267,4 @@ melted_obj <- psmelt(phyloseq_obj)
 
 save(phyloseq_obj, file = "output/phyloseq_obj.Rdata")
 save(melted_obj, file = "output/melted_obj.Rdata")
+
