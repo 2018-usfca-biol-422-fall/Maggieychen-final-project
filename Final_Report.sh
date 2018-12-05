@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# shellcheck source=/dev/null
 source /home/.profile
 
 # This is script to download the sequence data set
