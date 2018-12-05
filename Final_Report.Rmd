@@ -130,7 +130,8 @@ Figure 1. In different types of tissue samples, they have very similar compositi
 # and FOBT results
 
 melted_obj %>%
-  filter(Phylum %in% c("Proteobacteria", "Fusobacteria", "Firmicutes", "Bacteroidetes", "Lentisphaerae")) %>%
+  filter(Phylum %in% c("Proteobacteria", "Fusobacteria",
+                       "Firmicutes", "Bacteroidetes", "Lentisphaerae")) %>%
   filter(Class != "NA") %>%
   ggplot(aes(x = Class,
              y = Abundance,
@@ -150,7 +151,7 @@ Figure 2. Picked out top five most Phylum that has a diffrent abundance in cance
 # Take the Classes that are highly found in adenoma and carcinoma tissue
 # which are FOBT positive. Examine how aundance different in different genders
 melted_obj %>%
-  filter(Class %in% c("Gammaproteobacteria", "Bacilli", "Bacteroidia", 
+  filter(Class %in% c("Gammaproteobacteria", "Bacilli", "Bacteroidia",
                       "Clostridia", "Negativicutes", "Fusobacteriia")) %>%
   filter(FOBT.result == "positive") %>%
   ggplot(aes(x = disease_stat,
@@ -195,7 +196,8 @@ Figure 4. In both male and female, FOBT positive admona and carcinoma tissues, t
 # between cancer type and FOBT 
 
 melted_obj %>%
-  filter(Family %in% c("Lachnospiraceae", "Ruminococcaceae", "Bacteroidaceae")) %>%
+  filter(Family %in% c("Lachnospiraceae", "Ruminococcaceae",
+                       "Bacteroidaceae")) %>%
   filter(Genus != "NA") %>%
   ggplot(aes(x = disease_stat,
              y = Abundance,
