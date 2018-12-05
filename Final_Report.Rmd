@@ -16,19 +16,34 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Add about 2-3 pages here. Across the whole manuscript, you should cite at least 20 peer reviewed articles.
 
+Microbial community has constantly interact with human communities and there are both benifits and harms can be done to human health by different bacteria. For instance, microbial community in human's gut is a typical example of how the human can benefit from bacteria. The microbial community in human's gut support metabolic activities, which will help the provide energy and provide nutrients for human's body. The microbial community in the gut also help provide immune protection against alien microbes [@mcmurdie2013]. However, microbial community can also be related to colon cancer. Worldwide, coloretal cancer has accounted for over a half million death annually, which is the third most commonly diagnosed maligancy [@parkin2005global]. There two major stages of colorectal cancer development, fisrtly, it start with the precancerous adenomatous polyps in the colon, which is also known as the adenoma. The second stage is the progression into invasive and metastatic cancerous tumor, which is also called carcinoma [@levin2008screening]. The development of colorectal adenocarcinoma can be caused by the sequenctial or epigenetic mutation in the epithlial cells in the gastronintestinal trait. The mutation modifies the normal epithlial cells into hyperperliferative mucosa, which gives rise to begin adenoma [@pancione2012genetic]. The normal gastonintestinal epithelium differentiate into several epithelial colon lineage including Panteh, goblet, and endocrine cells. They have the function of secret mucosa to lubercate the colon, and provide ptotection and anchor point for bacteria [@kosinski2007gene]. Thus, if the cancer causing mutation, alternated the function of colon  epithelial cell, there is a chance of cahnging the microbial community in the colon. Therefore, the abundance and composition of gastrointestinal mirobal coomunity may serve as an indication of cancer development. Due to the early diagnosis, the colorectal cancer have a steady decrease of death rate in the United States.      
+
+For this paper, my primary question of interest is that what are the microbiomes that different from adenoma, carcinoma, and normal tissues. Also, what are their functions or relationship to the colorectal cancer. Then use this information to examine whether there is a corrolation between bacteria species and the personal variables like BMI, geographical locations and medication. As an result, for adenoma, carcinoma, and normal tissues, there is a simmilar microbial community composition, but there is a different the abundance of each bacteria species. Also, bacterias can function in both directions, aid in cancer progession or help slow down the cancer progession. Lastly, geographical regions and medication will also impact and shape the microbial community in individuals, which can function as an possible prediction and guidence for colorectal cancer treatments. 
+
+Eventhough colon has been the part in human body that has most bacteria invloved, but the knowledge of investigating the relationship between cancer and mirobial communities in human bodies can be applied to other types of cancer, both in treatment and preventions. 
+
 # Methods
 
 ## Study design
 
 Add about half a page here. In this section instead of first person (I/we), use the authors of the paper you selected, since you'll just be describing what they did, based on the methods in their paper.
 
+Zacular et al, examined 90
+
 ## Sample origin and sequencing
 
 Add about half a page here. In this section instead of first person (I/we), use the authors of the paper you selected, since you'll just be describing what they did, based on the methods in their paper.
 
+Approved by the University of Michigan Insititional Review Board and all subjects provided informed consent. Zacular et al. took sample from patients, that were 18 years of age or older, and who could tolerate 58ml of blood removal at two time points, willing to compkete an gFOBT kit, able to provide informed consent, also who had colonoscopy and histologically confirmed colonic disease status. Zacular et al, excluded pateiens who is known to have HIV, chronic vial hepatitis, HNPCC, FAP, inflammatory bowel disease. Or any surgery radiation and chemotherapy for their current colorectal cancer or colonic adenoma. Fecal samples and the colonoscopies were collected and performed respectivly from four subjects of locations including, Toronto Canada, Boston Massachusrtts, USA; Houston Texas, USA; and Ann Arbor Michigan, USA. The colonoscopies were followed by endoscopic examination, and patients who have no colonic abnormalities weer designated as healthy. For examinations that revealed the presence of lesions resulted in a biopsy and subsquence diagnosis of adenoma or carcinoma. All the samples collected from participants were collected following the usual dietary and medication restriction for 24 hours, as a whole evacuated stoll in a hat with no preservatives. The gFOBT 6-Panel kit (Sensa HemocultII, Beckman-coulter) was prepared by patients immediately after the previous collection, from different areas of the stool.  
+
 ## Computational
 
 These are the methods you used to do your bioinformatic analyses analyses. Should probably be between 0.5 and 1 pages. At a very minimum should include citations for DADA2 and phyloseq if you are doing an amplicon study, or other citations as appropriate.
+
+
+I used DADA to analyze and clean the data, then phyloseq and ggplot to visualize the results. Firstly, I ran a quality control on all twenty of the sample data, which generated a quality profile on each of the samples. Then according to the sequence quality, I trimmed the data if they have more than three expected error, and has a quality lower than two. As a quality control, I created a table to compare the read counts before and after the trim to ensure I did not trim off too many sequences. After the trim, I build an error model for each sample to assess the probability of an unmatched base is an error or not, and a plot to check whether the error model matches the data. After it, I also deleted the duplicated sequences. Then as an essential step, I DADA to process the sequence data. DADA is an analysis include the error model and evaluates whether the unique sequence found is true or false. DADA eliminates the false positive results to provide the real variants and limit spurious sequence, to provide a high-resolution amplicon data [@callahan2016].
+
+ Then I listed the output of the DADA analysis on a table according to the variety of length. As well as a histogram to indicate the distribution of the sequence that is trimmed and denoised, to ensure that all the sequences are in acceptable length and quality. Using this output, I also removed all the chimeras, which is the cDNA sequence that generated from two transcripts that is caused by polymerase stuck and ump to another similar sequence. Using the sequence data, I assigned the taxonomy according to the supplied training set. I also created a phylogeny tree using the trimmed and denoised sequence data. Using the dada2 output, I charted a data set, which contains the metadata for each sample, Phylogeny, and taxonomy for each sequence. Then to enable the ggplot function, I combined the taxa and metadata into one table. 
 
 # Results
 
@@ -45,8 +60,7 @@ These are the methods you used to do your bioinformatic analyses analyses. Shoul
                     
 
 
-```{r}
-# load-packages-and-data
+```{r load-packages-and-data}
 # load general-use packages
 library("dplyr")
 library("tidyr")
@@ -353,7 +367,7 @@ melted_obj %>%
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 1))
 ```
-Figure 2. Picked out top five most Phylum that has a diffrent zbundance in cancer tissue than the normal tissue. Then aexamine their corrolation between Class and FOBT results. Blood clots were only found in cancer tissues, and cancer tissue has a different micorbia community distribution than the normal tissue. There are several class high significant high abundance in the FOBT positive cacner tissues. 
+Figure 2. Picked out top five most Phylum that has a diffrent abundance in cancer tissue than the normal tissue. Then aexamine their corrolation between Class and FOBT results. Blood clots were only found in cancer tissues, and cancer tissue has a different micorbia community distribution than the normal tissue. There are several class high significant high abundance in the FOBT positive cacner tissues. 
 
 ```{r class-tissue-sex-barplot}
 # Take the Classes that are highly found in adenoma and carcinoma tissue
@@ -431,9 +445,26 @@ melted_obj %>%
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 0.1))
 ```
- 
+Figure 6. In Genus Oscillibacter, FOBT negative tissue. This Genus has higher abundancy in FOBT negative tissues, which is not an induction bacteria for the blood clots. Examine how different tisse type and bmi is corrolated to the locational regions. For all the adenoma are from Toronton, carcinoma samples are mostly from Boston and Houston. For normal healthly smples are more diversed. 
 
 
+```{r}
+melted_obj %>%
+  filter(Genus %in% c("Oscillibacter")) %>%
+  filter(FOBT.result == "negative") %>%
+  filter(disease_stat != "normal") %>%
+  filter(Medications != "unknown") %>%
+  ggplot(aes(x = as.numeric(as.character(bmi)),
+             y = Abundance,
+             color = Medications,
+             fill = Medications)) +
+  geom_col(width = 0.2) +
+  facet_grid(~ disease_stat) +
+  theme(axis.text.x = element_text(angle = 90,
+                                     hjust = 0.1))
+```
+
+Figure 7. To further inverstigate how *Oscillibacter* is impacted by the medication. For no treatment in the carcinoma, there is high abundance, the drug treatment will decrese the abundance of *Oscillibacter*, which might consider to be the negative effects of te drug treatment. For medications there are a lot of drugs been used to treat high cholestrol levels. 
 
 In addition to a minimum of 5-8 figures/tables (and associated captions), you should include sufficient text in this section to describe what your findings were. Remember that in the results section you just describe what you found, but you don't interpret it - that happens in the discussion. 2-3 pages.
 
