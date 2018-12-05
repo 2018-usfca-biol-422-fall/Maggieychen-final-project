@@ -9,14 +9,16 @@ csl: bioinformatics.csl
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Not show up this code and the outcome
+# echo = FALSE hide all the codes for the graphs
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 # Introduction
 
 Add about 2-3 pages here. Across the whole manuscript, you should cite at least 20 peer reviewed articles.
 
-Microbial community has constantly interact with human communities and there are both benifits and harms can be done to human health by different bacteria. For instance, microbial community in human's gut is a typical example of how the human can benefit from bacteria. The microbial community in human's gut support metabolic activities, which will help the provide energy and provide nutrients for human's body. The microbial community in the gut also help provide immune protection against alien microbes [@mcmurdie2013]. However, microbial community can also be related to colon cancer. Worldwide, coloretal cancer has accounted for over a half million death annually, which is the third most commonly diagnosed maligancy [@parkin2005global]. There two major stages of colorectal cancer development, fisrtly, it start with the precancerous adenomatous polyps in the colon, which is also known as the adenoma. The second stage is the progression into invasive and metastatic cancerous tumor, which is also called carcinoma [@levin2008screening]. The development of colorectal adenocarcinoma can be caused by the sequenctial or epigenetic mutation in the epithlial cells in the gastronintestinal trait. The mutation modifies the normal epithlial cells into hyperperliferative mucosa, which gives rise to begin adenoma [@pancione2012genetic]. The normal gastonintestinal epithelium differentiate into several epithelial colon lineage including Panteh, goblet, and endocrine cells. They have the function of secret mucosa to lubercate the colon, and provide ptotection and anchor point for bacteria [@kosinski2007gene]. Thus, if the cancer causing mutation, alternated the function of colon  epithelial cell, there is a chance of cahnging the microbial community in the colon. Therefore, the abundance and composition of gastrointestinal mirobal coomunity may serve as an indication of cancer development. Due to the early diagnosis, the colorectal cancer have a steady decrease of death rate in the United States.      
+Microbial community has constantly interact with human communities and there are both benefits and harms can be done to human health by different bacteria. For instance, microbial community in human's gut is a typical example of how the human can benefit from bacteria. The microbial community in human's gut support metabolic activities, which will help the provide energy and provide nutrients for human's body. The microbial community in the gut also help provide immune protection against alien microbes [@mcmurdie2013]. However, microbial community can also be related to colon cancer. Worldwide, coloretal cancer has accounted for over a half million death annually, which is the third most commonly diagnosed malignancy [@parkin2005global]. There two major stages of correctional cancer development, firstly, it start with the precancerous adenomatous polyps in the colon, which is also known as the adenoma. The second stage is the progression into invasive and metastatic cancerous tumor, which is also called carcinoma [@levin2008screening]. The development of colorectal adenocarcinoma can be caused by the sequenctial or epigenetic mutation in the epithlial cells in the gastronintestinal trait. The mutation modifies the normal epithlial cells into hyperperliferative mucosa, which gives rise to begin adenoma [@pancione2012genetic]. The normal gastonintestinal epithelium differentiate into several epithelial colon lineage including Panteh, goblet, and endocrine cells. They have the function of secret mucosa to lubercate the colon, and provide ptotection and anchor point for bacteria [@kosinski2007gene]. Thus, if the cancer causing mutation, alternated the function of colon  epithelial cell, there is a chance of cahnging the microbial community in the colon. Therefore, the abundance and composition of gastrointestinal mirobal coomunity may serve as an indication of cancer development. Due to the early diagnosis, the colorectal cancer have a steady decrease of death rate in the United States.      
 
 For this paper, my primary question of interest is that what are the microbiomes that present differently in adenoma, carcinoma, and normal tissues. Also, what are their functions or relationship to the colorectal cancer. Then examine whether there is a corrolation between bacteria species and the personal variables like BMI, geographical locations and medication. As an result, for adenoma, carcinoma, and normal tissues, there is a simmilar microbial community composition, but there is a different the abundance of each bacteria species. Also, bacterias can function in both directions, aid in cancer progession or help slow down the cancer progession. Lastly, geographical regions and medication will also impact and shape the microbial community in individuals, which can function as an possible prediction and guidence for colorectal cancer treatments. 
 
@@ -49,7 +51,7 @@ I used DADA to analyze and clean the data, then phyloseq and ggplot to visualize
 
 ## Subsections are ok in the results section too
 
-```{r your-code-here}
+```{r load-RData-knit}
 # Add code chunks as needed for your analyses
 # For most analyses, I would recommend splitting the
 # intensive computational part into a seperate R script file
@@ -61,7 +63,7 @@ load("Dataset.RData")
                     
 
 
-```{r load-packages-and-data}
+```{r load-packages-and-data, include = FALSE}
 # load general-use packages
 library("dplyr")
 library("tidyr")
@@ -96,30 +98,28 @@ library("phyloseq")
 ```
 
 
-
-
-
-```{r}
+```{r melt-tables}
 melted_obj <- psmelt(phyloseq_obj)
 ```
 
 
 
-
-
-
-
-
-```{r FOBT-Phylum-disease-corrolation-barplot}
+```{r Phylum-disease-corrolation-barplot}
 # To examine the difference of microbia composition
 # under the context of Phylum, in different tissue
 # types and FOBT results
 melted_obj %>%
-  ggplot(aes(x = disease_stat,
+  filter(Phylum != "NA") %>%
+  ggplot(aes(x = Phylum,
              y = Abundance,
-             fill = Phylum,
-             color = Phylum)) +
-  geom_col(position = "dodge")
+             fill = disease_stat,
+             color = disease_stat)) +
+  geom_col(position = "dodge") +
+  ggtitle("Phylum and Disease State Corrolation") +
+  xlab("Disease State") +
+  ylab("Abundance") +
+  theme(axis.text.x = element_text(angle = 90,
+                                   hjust = 1))
 ```
 Figure 1. In different types of tissue samples, they have very similar composition of microbia communities, but there are differences in the sbunance of different phlyum. The distribution pattern in three kinds of tisssue samples are very different. The Bacteroidetes abundance decreased in adenoma and carcinoma tissues. 
 
@@ -131,21 +131,22 @@ Figure 1. In different types of tissue samples, they have very similar compositi
 
 melted_obj %>%
   filter(Phylum %in% c("Proteobacteria", "Fusobacteria",
-                       "Firmicutes", "Bacteroidetes", "Lentisphaerae")) %>%
-  filter(Class != "NA") %>%
+                       "Bacteroidetes")) %>%
+  filter(Class != "NA") %>% #To exclude the NA samples
+  filter(disease_stat != "normal") %>%
   ggplot(aes(x = Class,
              y = Abundance,
-             color = FOBT.result,
-             fill = FOBT.result)) +
-  geom_col(position = "dodge") +
+             color = FOBT.result)) +
+  geom_boxplot(position = "dodge") +
   ggtitle("FOTB Differentiate the Class Abundance in Variant Tissue Types ") +
   xlab("Class") +
   ylab("Abundance") +
-  facet_grid(~ disease_stat) +
-  theme(axis.text.x = element_text(angle = 90,
+  facet_grid(Phylum ~ disease_stat) +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 40,
                                      hjust = 1))
 ```
-Figure 2. Picked out top five most Phylum that has a diffrent abundance in cancer tissue than the normal tissue. Then aexamine their corrolation between Class and FOBT results. Blood clots were only found in cancer tissues, and cancer tissue has a different micorbia community distribution than the normal tissue. There are several class high significant high abundance in the FOBT positive cacner tissues. 
+Figure 2. Picked out top five most Phylum that has a diffrent abundance in cancer tissue than the normal tissue. Then aexamine their corrolation between Class and FOBT results. Blood clots were only found in cancer tissues, and cancer tissue has a different micorbia community distribution than the normal tissue. There are several class high significant high abundance in the FOBT positive cancer tissues. 
 
 ```{r class-tissue-sex-barplot}
 # Take the Classes that are highly found in adenoma and carcinoma tissue
@@ -156,18 +157,18 @@ melted_obj %>%
   filter(FOBT.result == "positive") %>%
   ggplot(aes(x = disease_stat,
              y = Abundance,
-             fill = Class,
-             color = Class)) +
-  geom_col(position = "dodge") +
-  ggtitle("Top Five Classes in TOBT Positive Tissue Different by Gender") +
+             color = sex)) +
+  geom_boxplot(position = "dodge") +
+  ggtitle("Top Five Class in FOBT Positive Tissue Different by Gender") +
   xlab("Disease State") +
   ylab("Abundance") +
-  facet_grid(~ sex)
+  scale_y_log10() +
+  facet_grid(~ Class) +
+  theme(axis.text.x = element_text(angle = 40,
+                                     hjust = 1))
 ```
 
-Figure 3. Filtered out the Class that in significantly more abundant in FOBT positive cancer tissues. Then examine the distribution of the Classes in both FOBT status and the tissue types. There is a higher abunadance of microbia community than FOBT negative tissues. Specifically, in the 
-
-
+Figure 3. Filtered out the Class that in significantly more abundant in FOBT positive cancer tissues. Then examine the distribution of the Classes in both FOBT status and the tissue types. There is a higher abundance of microbial community than FOBT negative tissues. Specifically, in the 
 
 
 
@@ -177,17 +178,22 @@ Figure 3. Filtered out the Class that in significantly more abundant in FOBT pos
 # and their relationships with gender and cancer types
 
 melted_obj %>%
-  filter(Class %in% c("Clostridia", "Bacteroidia")) %>%
+  filter(Class %in% c("Clostridia")) %>%
   filter(FOBT.result == "positive") %>%
   filter(Family != "NA") %>%
-  ggplot(aes(x = disease_stat,
+  ggplot(aes(x = Family,
              y = Abundance,
-             fill = Family,
-             color = Family)) +
-  geom_col(position = "dodge") +
-  facet_grid(~ sex)
+             color = sex)) +
+  geom_boxplot(position = "dodge") +
+  facet_grid(disease_stat ~.) +
+  ggtitle("Family Variation in Disease and Gender") +
+  xlab("Disease State") +
+  ylab("Abundance") +
+  scale_y_log10() +
+  theme(axis.text.x = element_text(angle = 90,
+                                     hjust = 1))
 ```
-Figure 4. In both male and female, FOBT positive admona and carcinoma tissues, there are several bacteria Family is commonly found. In addition to those male has a more diversed microbia community and higher abundancy. 
+Figure 4. In both male and female, FOBT positive adenoma and carcinoma tissues, there are several bacteria Family is commonly found. In addition to those male has a more diverse microbial community and higher abundance. 
 
 ```{r Genus-tissuetypes-FOBT-barplot}
 
@@ -207,11 +213,11 @@ melted_obj %>%
   ggtitle("Genus Distribution in Different Tissue Types") +
   xlab("Disease State") +
   ylab("Abundance") +
-  facet_grid(~ FOBT.result) +
+  facet_grid(FOBT.result ~.) +
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 0.1))
 ```
-Figuer 5. Taken the commnly found Families from previous graph, examine their Genus distribution in all tissues types, both FOBT postive and negative. In the FOBT positive tissues, there is a in gernal lowering of the microbial abundance. But there is a consistancy in the patterns of the community composition. *Oscillibacter* is the Genus that is found significantly more in FOBT negative tissue than the FOBT positive tissue.
+Figure 5. Taken the commonly found Families from previous graph, examine their Genus distribution in all tissues types, both FOBT positive and negative. In the FOBT positive tissues, there is a in general lowering of the microbial abundance. But there is a consistency in the patterns of the community composition. *Oscillibacter* is the Genus that is found significantly more in FOBT negative tissue than the FOBT positive tissue.
 
 
 
@@ -222,38 +228,45 @@ Figuer 5. Taken the commnly found Families from previous graph, examine their Ge
 melted_obj %>%
   filter(Genus %in% c("Oscillibacter")) %>%
   filter(FOBT.result == "negative") %>%
-  ggplot(aes(x = as.numeric(as.character(bmi)),
-             y = Abundance,
+  group_by(geo_loc_name, disease_stat) %>%
+  summarize(sum_abund = sum(Abundance)) %>%
+  filter(sum_abund > 0) %>%
+  ggplot(aes(x = disease_stat,
+             y = sum_abund,
              color = geo_loc_name,
              fill = geo_loc_name)) +
-  geom_col(position = "dodge") +
-  ggtitle("Oscillibacter Distribution in Geographical Locations") +
-  xlab("BMI") +
-  ylab("Abundance") +
-  facet_grid(~ disease_stat) +
-  theme(axis.text.x = element_text(angle = 90,
-                                     hjust = 0.1))
+  geom_col(position = position_dodge()) +
+  ggtitle("Genus Oscillibacter Distribution in Geographical Locations") +
+  xlab("Location") +
+  ylab("Sum of Read Abundance")
 ```
-Figure 6. In Genus Oscillibacter, FOBT negative tissue. This Genus has higher abundancy in FOBT negative tissues, which is not an induction bacteria for the blood clots. Examine how different tisse type and bmi is corrolated to the locational regions. For all the adenoma are from Toronton, carcinoma samples are mostly from Boston and Houston. For normal healthly smples are more diversed. 
+Figure 6. In Genus Oscillibacter, FOBT negative tissue. This Genus has higher abundance in FOBT negative tissues, which is not an induction bacteria for the blood clots. Examine how different tissue type and bmi is correlated to the location regions. For all the adenoma are from Toronto, carcinoma samples are mostly from Boston and Houston. For normal healthy samples are more diverse. 
 
 
-```{r}
+```{r Oscillibacter-FOBTneg-non-normal-Medication}
+# Under the Genus *Oscillibacter*, in the FOBT negative and non-normal tissue
+# examine how the medication will impact the abundancy
 melted_obj %>%
   filter(Genus %in% c("Oscillibacter")) %>%
   filter(FOBT.result == "negative") %>%
   filter(disease_stat != "normal") %>%
   filter(Medications != "unknown") %>%
-  ggplot(aes(x = as.numeric(as.character(bmi)),
+  filter(grepl(Medications, pattern = "lipitor")) %>%
+  ggplot(aes(x = Medications,
              y = Abundance,
-             color = Medications,
-             fill = Medications)) +
-  geom_col(width = 0.2) +
-  facet_grid(~ disease_stat) +
+             color = disease_stat,
+             fill = disease_stat)) +
+  geom_boxplot(width = 0.3, position = position_dodge()) +
+  ggtitle(" Genus Oscillibacter Distribution Under Different Treatments") +
+  xlab("Medication Type") +
+  ylab("Abundance") +
+  scale_y_log10() +
+  facet_wrap(~ disease_stat, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 0.1))
 ```
 
-Figure 7. To further inverstigate how *Oscillibacter* is impacted by the medication. For no treatment in the carcinoma, there is high abundance, the drug treatment will decrese the abundance of *Oscillibacter*, which might consider to be the negative effects of te drug treatment. For medications there are a lot of drugs been used to treat high cholestrol levels. 
+Figure 7. To further investigate how *Oscillibacter* is impacted by the medication. For no treatment in the carcinoma, there is high abundance, the drug treatment will decrees the abundance of *Oscillibacter*, which might consider to be the negative effects of te drug treatment. For medications there are a lot of drugs been used to treat high cholesterol levels. 
 
 In addition to a minimum of 5-8 figures/tables (and associated captions), you should include sufficient text in this section to describe what your findings were. Remember that in the results section you just describe what you found, but you don't interpret it - that happens in the discussion. 2-3 pages.
 
