@@ -18,7 +18,7 @@ Add about 2-3 pages here. Across the whole manuscript, you should cite at least 
 
 Microbial community has constantly interact with human communities and there are both benifits and harms can be done to human health by different bacteria. For instance, microbial community in human's gut is a typical example of how the human can benefit from bacteria. The microbial community in human's gut support metabolic activities, which will help the provide energy and provide nutrients for human's body. The microbial community in the gut also help provide immune protection against alien microbes [@mcmurdie2013]. However, microbial community can also be related to colon cancer. Worldwide, coloretal cancer has accounted for over a half million death annually, which is the third most commonly diagnosed maligancy [@parkin2005global]. There two major stages of colorectal cancer development, fisrtly, it start with the precancerous adenomatous polyps in the colon, which is also known as the adenoma. The second stage is the progression into invasive and metastatic cancerous tumor, which is also called carcinoma [@levin2008screening]. The development of colorectal adenocarcinoma can be caused by the sequenctial or epigenetic mutation in the epithlial cells in the gastronintestinal trait. The mutation modifies the normal epithlial cells into hyperperliferative mucosa, which gives rise to begin adenoma [@pancione2012genetic]. The normal gastonintestinal epithelium differentiate into several epithelial colon lineage including Panteh, goblet, and endocrine cells. They have the function of secret mucosa to lubercate the colon, and provide ptotection and anchor point for bacteria [@kosinski2007gene]. Thus, if the cancer causing mutation, alternated the function of colon  epithelial cell, there is a chance of cahnging the microbial community in the colon. Therefore, the abundance and composition of gastrointestinal mirobal coomunity may serve as an indication of cancer development. Due to the early diagnosis, the colorectal cancer have a steady decrease of death rate in the United States.      
 
-For this paper, my primary question of interest is that what are the microbiomes that different from adenoma, carcinoma, and normal tissues. Also, what are their functions or relationship to the colorectal cancer. Then use this information to examine whether there is a corrolation between bacteria species and the personal variables like BMI, geographical locations and medication. As an result, for adenoma, carcinoma, and normal tissues, there is a simmilar microbial community composition, but there is a different the abundance of each bacteria species. Also, bacterias can function in both directions, aid in cancer progession or help slow down the cancer progession. Lastly, geographical regions and medication will also impact and shape the microbial community in individuals, which can function as an possible prediction and guidence for colorectal cancer treatments. 
+For this paper, my primary question of interest is that what are the microbiomes that present differently in adenoma, carcinoma, and normal tissues. Also, what are their functions or relationship to the colorectal cancer. Then examine whether there is a corrolation between bacteria species and the personal variables like BMI, geographical locations and medication. As an result, for adenoma, carcinoma, and normal tissues, there is a simmilar microbial community composition, but there is a different the abundance of each bacteria species. Also, bacterias can function in both directions, aid in cancer progession or help slow down the cancer progession. Lastly, geographical regions and medication will also impact and shape the microbial community in individuals, which can function as an possible prediction and guidence for colorectal cancer treatments. 
 
 Eventhough colon has been the part in human body that has most bacteria invloved, but the knowledge of investigating the relationship between cancer and mirobial communities in human bodies can be applied to other types of cancer, both in treatment and preventions. 
 
@@ -363,6 +363,9 @@ melted_obj %>%
              color = FOBT.result,
              fill = FOBT.result)) +
   geom_col(position = "dodge") +
+  ggtitle("FOTB Differentiate the Class Abundance in Variant Tissue Types ") +
+  xlab("Class") +
+  ylab("Abundance") +
   facet_grid(~ disease_stat) +
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 1))
@@ -380,7 +383,10 @@ melted_obj %>%
              y = Abundance,
              fill = Class,
              color = Class)) +
-  geom_col() +
+  geom_col(position = "dodge") +
+  ggtitle("Top Five Classes in TOBT Positive Tissue Different by Gender") +
+  xlab("Disease State") +
+  ylab("Abundance") +
   facet_grid(~ sex)
 ```
 
@@ -421,10 +427,13 @@ melted_obj %>%
              fill = Genus,
              color = Genus)) +
   geom_col(position = "dodge") +
+  ggtitle("Genus Distribution in Different Tissue Types") +
+  xlab("Disease State") +
+  ylab("Abundance") +
   facet_grid(~ FOBT.result) +
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 0.1))
-```
+s```
 Figuer 5. Taken the commnly found Families from previous graph, examine their Genus distribution in all tissues types, both FOBT postive and negative. In the FOBT positive tissues, there is a in gernal lowering of the microbial abundance. But there is a consistancy in the patterns of the community composition. *Oscillibacter* is the Genus that is found significantly more in FOBT negative tissue than the FOBT positive tissue.
 
 
@@ -441,6 +450,9 @@ melted_obj %>%
              color = geo_loc_name,
              fill = geo_loc_name)) +
   geom_col(position = "dodge") +
+  ggtitle("Oscillibacter Distribution in Geographical Locations") +
+  xlab("BMI") +
+  ylab("Abundance") +
   facet_grid(~ disease_stat) +
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 0.1))
