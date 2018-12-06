@@ -49,6 +49,7 @@ I used DADA to analyze and clean the data, then phyloseq and ggplot to visualize
 
 # Results
 
+Firstly I was intrerested in how is the distribution of Phylum in different cancer progrssion stages, which includes normal, adenoma, and carcinma. I found that in different types of fecal samples, they had very similar composition of microbia communities, but there are differences in the abundancy of different phlyums. The distribution pattern in three kinds of tisssue samples are very different. The Bacteroidetes abundance decreased in the order of normal samples as the highest abundance, then carcinoma, adenoma samples. Fusobacteria is signficantly more abundant in carcinoma samples. Proteibacteria is more abundant in adenoma and carcinoma samples than the normal samples. 
 ## Subsections are ok in the results section too
 
 ```{r load-RData-knit}
@@ -121,45 +122,47 @@ melted_obj %>%
   theme(axis.text.x = element_text(angle = 90,
                                    hjust = 1))
 ```
-Figure 1. In different types of tissue samples, they have very similar composition of microbia communities, but there are differences in the sbunance of different phlyum. The distribution pattern in three kinds of tisssue samples are very different. The Bacteroidetes abundance decreased in adenoma and carcinoma tissues. 
+
+Figure 1. In different types of fecal samples, they have very similar composition of microbia communities, but there are differences in the abundancy of different phlyum. The distribution pattern in three kinds of tisssue samples are very different. The Bacteroidetes abundance decreased in the order normal samples has the highest abundance, then carcinoma and then adenoma samples. Euryarchaeota is in the opposit trending than the Bacteroidets, the abundance increase in the order og normal, carcinoma, and adenoma. Fusobacteria is signficantly more abundant in carcinoma samples. Proteibacteria is more abundant in adenoma and carcinoma samples than the normal samples. 
 
 
-```{r top-Phylum-into-class-and-FOBT-barplot}
+```{r top-Phylum-into-class-and-FOBT-boxplot}
 # Take the most commonly found Phylums from previous figure
 # examine the class under them, and in different tissue types
 # and FOBT results
 
 melted_obj %>%
   filter(Phylum %in% c("Proteobacteria", "Fusobacteria",
-                       "Bacteroidetes")) %>%
+                       "Bacteroidetes", "Firmicutes")) %>%
   filter(Class != "NA") %>% #To exclude the NA samples
   filter(disease_stat != "normal") %>%
   ggplot(aes(x = Class,
              y = Abundance,
              color = FOBT.result)) +
-  geom_boxplot(position = "dodge") +
+  geom_boxplot(position = "dodge", width = 1) +
   ggtitle("FOTB Differentiate the Class Abundance in Variant Tissue Types ") +
   xlab("Class") +
   ylab("Abundance") +
-  facet_grid(Phylum ~ disease_stat) +
+  facet_grid(disease_stat ~ Phylum, scales = "free_x") +
   scale_y_log10() +
   theme(axis.text.x = element_text(angle = 40,
                                      hjust = 1))
 ```
-Figure 2. Picked out top five most Phylum that has a diffrent abundance in cancer tissue than the normal tissue. Then aexamine their corrolation between Class and FOBT results. Blood clots were only found in cancer tissues, and cancer tissue has a different micorbia community distribution than the normal tissue. There are several class high significant high abundance in the FOBT positive cancer tissues. 
 
-```{r class-tissue-sex-barplot}
+Figure 2. Picked out four Phylum that has a diffrent abundance in normal, adenoma, and carcinoma samples. Then examined their corrolation between Class and FOBT results. Blood clots were only found in adenoma and carcinoma samples. There are several Class has significant high abundance in the FOBT positive samples. The boxplot help to identify the outliers and the mean vaule of the abundance. As a results, Bacterioidia has the some abundance in both FOBT positive and negative samples from adenoma, and carcinoma. In both adenoma and carcinoma samples, the FOBT sample had more abundant Fusobacteriia than FOBT negative samples. The Methanobacteria had a high average abundance in FOBT positive carcinoma tissue, then FOBT negative. In contrast, Methanobacteria had a relativly close average abundance between FOBT positive and negative adenoma samples.
+
+```{r class-tissue-sex-boxplot}
 # Take the Classes that are highly found in adenoma and carcinoma tissue
 # which are FOBT positive. Examine how aundance different in different genders
 melted_obj %>%
-  filter(Class %in% c("Gammaproteobacteria", "Bacilli", "Bacteroidia",
-                      "Clostridia", "Negativicutes", "Fusobacteriia")) %>%
+  filter(Class %in% c("Gammaproteobacteria", "Clostridia",
+                      "Fusobacteriia", "Negativicutes")) %>%
   filter(FOBT.result == "positive") %>%
   ggplot(aes(x = disease_stat,
              y = Abundance,
              color = sex)) +
   geom_boxplot(position = "dodge") +
-  ggtitle("Top Five Class in FOBT Positive Tissue Different by Gender") +
+  ggtitle("Top Four Class in FOBT Positive Tissue Different by Gender") +
   xlab("Disease State") +
   ylab("Abundance") +
   scale_y_log10() +
@@ -168,7 +171,7 @@ melted_obj %>%
                                      hjust = 1))
 ```
 
-Figure 3. Filtered out the Class that in significantly more abundant in FOBT positive cancer tissues. Then examine the distribution of the Classes in both FOBT status and the tissue types. There is a higher abundance of microbial community than FOBT negative tissues. Specifically, in the 
+Figure 3. Filtered out the Class that has a significant difference between samples from differnet cancer progression stages and FOBT results. Thus, to futher analyze the corrolation between microbiome community and the gender. I filtered out the samples that are FOBT positive and catagorized into adenoma and carcinoma samples, colored the gender of the patients. For Fusobacteriia, there were mostly male samples only. Fusobacteria also had high abundance in carcinoma tissues, and lower in adenoma samples. For Gammaproteobacteria, in both adenoma and carcinoma samples, they had relativly simmilar abundance in both male and female samples. 
 
 
 
@@ -176,16 +179,17 @@ Figure 3. Filtered out the Class that in significantly more abundant in FOBT pos
 # For tissues that has blood clot in,
 # what are the Family found under Class Clostridia and Bacteroidia
 # and their relationships with gender and cancer types
+# anaerosporobacter blautia coprococcus Ruminococcus2 Lactonifactor
 
 melted_obj %>%
   filter(Class %in% c("Clostridia")) %>%
-  filter(FOBT.result == "positive") %>%
-  filter(Family != "NA") %>%
-  ggplot(aes(x = Family,
+  filter(Family %in% c("Lachnospiraceae")) %>%
+  filter(Genus %in% c("Lactonifactor", "Ruminococcus2", "Anaerosporobacter")) %>%
+  ggplot(aes(x = Genus,
              y = Abundance,
              color = sex)) +
   geom_boxplot(position = "dodge") +
-  facet_grid(disease_stat ~.) +
+  facet_grid(disease_stat ~ FOBT.result, scales = "free_x") +
   ggtitle("Family Variation in Disease and Gender") +
   xlab("Disease State") +
   ylab("Abundance") +
@@ -193,31 +197,8 @@ melted_obj %>%
   theme(axis.text.x = element_text(angle = 90,
                                      hjust = 1))
 ```
-Figure 4. In both male and female, FOBT positive adenoma and carcinoma tissues, there are several bacteria Family is commonly found. In addition to those male has a more diverse microbial community and higher abundance. 
+Figure 4. In both male and female, FOBT positive adenoma and carcinoma samples, there are several bacteria Family is commonly found. In addition to those male has a more diverse microbial community and higher abundance. 
 
-```{r Genus-tissuetypes-FOBT-barplot}
-
-# Taken the bacteria Family that is commonly found above
-# and exame the Genus found under them, also the relationship
-# between cancer type and FOBT 
-
-melted_obj %>%
-  filter(Family %in% c("Lachnospiraceae", "Ruminococcaceae",
-                       "Bacteroidaceae")) %>%
-  filter(Genus != "NA") %>%
-  ggplot(aes(x = disease_stat,
-             y = Abundance,
-             fill = Genus,
-             color = Genus)) +
-  geom_col(position = "dodge") +
-  ggtitle("Genus Distribution in Different Tissue Types") +
-  xlab("Disease State") +
-  ylab("Abundance") +
-  facet_grid(FOBT.result ~.) +
-  theme(axis.text.x = element_text(angle = 90,
-                                     hjust = 0.1))
-```
-Figure 5. Taken the commonly found Families from previous graph, examine their Genus distribution in all tissues types, both FOBT positive and negative. In the FOBT positive tissues, there is a in general lowering of the microbial abundance. But there is a consistency in the patterns of the community composition. *Oscillibacter* is the Genus that is found significantly more in FOBT negative tissue than the FOBT positive tissue.
 
 
 
@@ -226,7 +207,7 @@ Figure 5. Taken the commonly found Families from previous graph, examine their G
 # distributed along with different bmi and location
 
 melted_obj %>%
-  filter(Genus %in% c("Oscillibacter")) %>%
+  filter(Genus %in% c("Ruminococcus")) %>%
   filter(FOBT.result == "negative") %>%
   group_by(geo_loc_name, disease_stat) %>%
   summarize(sum_abund = sum(Abundance)) %>%
@@ -240,22 +221,21 @@ melted_obj %>%
   xlab("Location") +
   ylab("Sum of Read Abundance")
 ```
-Figure 6. In Genus Oscillibacter, FOBT negative tissue. This Genus has higher abundance in FOBT negative tissues, which is not an induction bacteria for the blood clots. Examine how different tissue type and bmi is correlated to the location regions. For all the adenoma are from Toronto, carcinoma samples are mostly from Boston and Houston. For normal healthy samples are more diverse. 
+Figure 5. In Genus Oscillibacter, FOBT negative tissue. This Genus has higher abundance in FOBT negative tissues, which is not an induction bacteria for the blood clots. Examine how different tissue type and bmi is correlated to the location regions. For all the adenoma are from Toronto, carcinoma samples are mostly from Boston and Houston. For normal healthy samples are more diverse. 
 
 
 ```{r Oscillibacter-FOBTneg-non-normal-Medication}
 # Under the Genus *Oscillibacter*, in the FOBT negative and non-normal tissue
 # examine how the medication will impact the abundancy
 melted_obj %>%
-  filter(Genus %in% c("Oscillibacter")) %>%
+  filter(Genus %in% c("Ruminococcus")) %>%
   filter(FOBT.result == "negative") %>%
   filter(disease_stat != "normal") %>%
   filter(Medications != "unknown") %>%
   filter(grepl(Medications, pattern = "lipitor")) %>%
   ggplot(aes(x = Medications,
              y = Abundance,
-             color = disease_stat,
-             fill = disease_stat)) +
+             color = disease_stat)) +
   geom_boxplot(width = 0.3, position = position_dodge()) +
   ggtitle(" Genus Oscillibacter Distribution Under Different Treatments") +
   xlab("Medication Type") +
@@ -266,7 +246,7 @@ melted_obj %>%
                                      hjust = 0.1))
 ```
 
-Figure 7. To further investigate how *Oscillibacter* is impacted by the medication. For no treatment in the carcinoma, there is high abundance, the drug treatment will decrees the abundance of *Oscillibacter*, which might consider to be the negative effects of te drug treatment. For medications there are a lot of drugs been used to treat high cholesterol levels. 
+Figure 6. To further investigate how *Oscillibacter* is impacted by the medication. For no treatment in the carcinoma, there is high abundance, the drug treatment will decrees the abundance of *Oscillibacter*, which might consider to be the negative effects of te drug treatment. For medications there are a lot of drugs been used to treat high cholesterol levels. 
 
 In addition to a minimum of 5-8 figures/tables (and associated captions), you should include sufficient text in this section to describe what your findings were. Remember that in the results section you just describe what you found, but you don't interpret it - that happens in the discussion. 2-3 pages.
 
