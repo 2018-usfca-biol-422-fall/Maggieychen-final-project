@@ -251,6 +251,7 @@ melted_obj %>%
   ggtitle(" Genus Ruminococcus Distribution Under Different Treatments") +
   xlab("Medication Type") +
   ylab("Abundance") +
+  labs(color = "Disease State") +
   scale_y_log10() +
   facet_wrap(disease_stat ~ sex, scales = "free_x") +
   theme(axis.text.x = element_text(angle = 90,
