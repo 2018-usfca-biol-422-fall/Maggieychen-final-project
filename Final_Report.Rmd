@@ -227,7 +227,7 @@ melted_obj %>%
   geom_col(position = position_dodge()) +
   ggtitle("Genus Ruminococcus Distribution in Geographical Locations") +
   labs(fill = "Geographical Locations",
-       color = "Geographical Locations" ) +
+       color = "Geographical Locations") +
   xlab("Disease State") +
   ylab("Sum of Read Abundance")
 ```
