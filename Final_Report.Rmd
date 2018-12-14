@@ -106,7 +106,7 @@ melted_obj <- psmelt(phyloseq_obj)
 
 
 
-```{r Phylum-disease-corrolation-barplot}
+```{r Phylum-disease-corrolation-barplot, Warnings = FALSE}
 # To examine the difference of microbia composition
 # under the context of Phylum, in different sample
 # types and FOBT results
@@ -119,7 +119,7 @@ melted_obj %>%
   geom_col(position = "dodge") +
   ggtitle("Phylum and Disease State Corrolation") +
   labs(fill = "Disease State",
-       color = "Disease State") + # re-label the coloring 
+       color = "Disease State") + # re-label the coloring
   xlab("Phlylum") +
   ylab("Abundance") +
   theme(axis.text.x = element_text(angle = 90,
