@@ -56,12 +56,11 @@ Since *Ruminococcus* had shown a different pattern between the FOBT positive and
 
 
 ```{r load-RData-knit}
-# Add code chunks as needed for your analyses
-# For most analyses, I would recommend splitting the
-# intensive computational part into a seperate R script file
-# and then just load your libraries and the data object here
-# using the `load()` function. Ask me for clarification if this is
-# unclear.
+# Use the load() function to produce load the 
+# data sets and tables processes in the R script
+# so don't have to run thorugh all the trim and DADA
+# but still need to load necessary libaries for ggplot
+# this load data set include the phyloseq, metadata, and melted data
 load("Dataset.RData")
 ```
                     
@@ -103,6 +102,9 @@ library("phyloseq")
 
 
 ```{r melt-tables}
+# in case of the load data didn't include the metled data
+# combine the metadata and the phyloseq to form the melted dataset
+# which is used for ggplot in this report
 melted_obj <- psmelt(phyloseq_obj)
 ```
 
@@ -110,7 +112,7 @@ melted_obj <- psmelt(phyloseq_obj)
 
 ```{r Phylum-disease-corrolation-barplot}
 # To examine the difference of microbia composition
-# under the context of Phylum, in different tissue
+# under the context of Phylum, in different sample
 # types and FOBT results
 melted_obj %>%
   filter(Phylum != "NA") %>%
@@ -121,7 +123,7 @@ melted_obj %>%
   geom_col(position = "dodge") +
   ggtitle("Phylum and Disease State Corrolation") +
   labs(fill = "Disease State",
-       color = "Disease State") +
+       color = "Disease State") + # re-label the coloring 
   xlab("Phlylum") +
   ylab("Abundance") +
   theme(axis.text.x = element_text(angle = 90,
@@ -133,8 +135,11 @@ Figure 1. In different types of fecal samples, they have very similar compositio
 
 ```{r top-Phylum-into-class-and-FOBT-boxplot}
 # Take the most commonly found Phylums from previous figure
-# examine the class under them, and in different tissue types
+# Proteobacteria, Fusobacteria, Bacteroidetes, Firmicutes
+# examine the class under them, and in different sample types
 # and FOBT results
+# the boxplot can help identify the outliers
+# which gives a more accurate measurement
 
 melted_obj %>%
   filter(Phylum %in% c("Proteobacteria", "Fusobacteria",
@@ -158,7 +163,9 @@ Figure 2. Picked out four Phylum that has a different abundance in normal, adeno
 
 ```{r class-tissue-sex-boxplot}
 # Take the Classes that are highly found in adenoma and carcinoma tissue
-# which are FOBT positive. Examine how aundance different in different genders
+# Gammaproteobacteria, Clostridia, Fusobacteriia, Negativicutes
+# and the samples has the FOBT result positive
+# Examine how aundance different in different genders
 melted_obj %>%
   filter(Class %in% c("Gammaproteobacteria", "Clostridia",
                       "Fusobacteriia", "Negativicutes")) %>%
@@ -181,7 +188,7 @@ Figure 3. Filtered out the Class that has a significant difference between sampl
 
 
 ```{r Clostridia-FOBT-sex-Genus-boxplot}
-# For tissues that has blood clot in,
+# For tissues that has blood clot in (FOBT positive),
 # what are the Family found under Class Clostridia
 # Family Lachnospiraceae, and Genus *Lactonifactor*, *Ruminococcus2*, *Anaerosporobacter*
 # and their relationships with gender and cancer types
@@ -211,6 +218,9 @@ Figure 4. In both male and female, FOBT results created a different abundance of
 
 
 ```{r Ruminococcus-FOBTneg-loc-barplot}
+# *Ruminococcus* has a interesting abundance in distribution in 
+# FOBT positive tissue, but consistant in the FOBT negative samples
+# between male and females, which might also be regarless of cancer stages
 # From the FOBT negative tissues, how *Ruminococcus* is 
 # distributed along with different disease state and locations
 
@@ -237,7 +247,8 @@ Figure 5. For Genus *Ruminococcus*'s distribution in the FOBT negative samples, 
 
 ```{r Ruminococcus-FOBTneg-non-normal-Medication}
 # Under the Genus *Ruminococcus*, in the FOBT negative and non-normal tissue
-# examine how the medication will impact the abundancy
+# examine how the medication will impact the abundancy of *Ruminococcus*
+
 melted_obj %>%
   filter(Genus %in% c("Ruminococcus")) %>%
   filter(FOBT.result == "negative") %>%
